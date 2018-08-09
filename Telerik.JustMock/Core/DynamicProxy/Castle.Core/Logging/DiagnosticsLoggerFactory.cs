@@ -14,8 +14,8 @@
 
 namespace Telerik.JustMock.Core.Castle.Core.Logging
 {
-#if !SILVERLIGHT
-	using System;
+#if (!SILVERLIGHT && !NETCOREAPP2_0)
+    using System;
 
 	[Serializable]
 	internal class DiagnosticsLoggerFactory : AbstractLoggerFactory

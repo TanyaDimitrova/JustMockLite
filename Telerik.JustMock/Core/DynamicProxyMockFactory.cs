@@ -41,8 +41,8 @@ namespace Telerik.JustMock.Core
 #endif
 		}
 
-#if DEBUG && !SILVERLIGHT
-		internal static void SaveAssembly()
+#if (DEBUG && !SILVERLIGHT && !NETCOREAPP2_0)
+        internal static void SaveAssembly()
 		{
 			generator.ProxyBuilder.ModuleScope.SaveAssembly();
 		}
@@ -69,10 +69,10 @@ namespace Telerik.JustMock.Core
 			}
 
 			var interceptor = repository.Interceptor;
-#if SILVERLIGHT
+#if (SILVERLIGHT || NETCOREAPP2_0)
 			options.Hook = new ProxyGenerationHook(false, settings.InterceptorFilter);
 #else
-			options.Hook = new ProxyGenerationHook(settings.MockConstructorCall, settings.InterceptorFilter);
+            options.Hook = new ProxyGenerationHook(settings.MockConstructorCall, settings.InterceptorFilter);
 #endif
 
 			object instance = null;
@@ -99,7 +99,7 @@ namespace Telerik.JustMock.Core
 			{
 				try
 				{
-#if SILVERLIGHT
+#if (SILVERLIGHT || NETCOREAPP2_0)
 					if (settings.Args == null || settings.Args.Length == 0)
 					{
 						ConstructorInfo[] constructors = type.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
@@ -123,7 +123,7 @@ namespace Telerik.JustMock.Core
 						}
 					}
 #endif
-					instance = generator.CreateClassProxy(type, settings.AdditionalMockedInterfaces, options, settings.Args, interceptor);
+                    instance = generator.CreateClassProxy(type, settings.AdditionalMockedInterfaces, options, settings.Args, interceptor);
 				}
 				catch (TypeLoadException ex)
 				{
@@ -264,10 +264,10 @@ namespace Telerik.JustMock.Core
 			{
 				get
 				{
-#if SILVERLIGHT
+#if (SILVERLIGHT || NETCOREAPP2_0)
 					return ProxyConstructorImplementation.SkipConstructor;
 #else
-					return myMockConstructors ? ProxyConstructorImplementation.DoNotCallBase : ProxyConstructorImplementation.SkipConstructor;
+                    return myMockConstructors ? ProxyConstructorImplementation.DoNotCallBase : ProxyConstructorImplementation.SkipConstructor;
 #endif
 				}
 			}

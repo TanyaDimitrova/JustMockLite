@@ -332,13 +332,17 @@ namespace Telerik.JustMock.Core.Castle.DynamicProxy
 #if !SILVERLIGHT
 			if (savePhysicalAssembly)
 			{
-				AssemblyBuilder assemblyBuilder;
+                AssemblyBuilder assemblyBuilder;
 				try
 				{
-					assemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(
-						assemblyName, AssemblyBuilderAccess.RunAndSave, signStrongName ? StrongNamedModuleDirectory : WeakNamedModuleDirectory);
-				}
-				catch (ArgumentException e)
+#if !NETCOREAPP2_0
+                    assemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(
+                        assemblyName, AssemblyBuilderAccess.RunAndSave, signStrongName ? StrongNamedModuleDirectory : WeakNamedModuleDirectory);
+#else
+                    assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Run);
+#endif
+                }
+                catch (ArgumentException e)
 				{
 					if (signStrongName == false && e.StackTrace.Contains("ComputePublicKey") == false)
 					{
@@ -351,17 +355,26 @@ namespace Telerik.JustMock.Core.Castle.DynamicProxy
 							GetType());
 					throw new ArgumentException(message, e);
 				}
-				var module = assemblyBuilder.DefineDynamicModule(moduleName, moduleName, false);
-				return module;
+#if !NETCOREAPP2_0
+                var module = assemblyBuilder.DefineDynamicModule(moduleName, moduleName, false);
+#else
+                var module = assemblyBuilder.DefineDynamicModule(moduleName);
+#endif
+
+                return module;
 			}
 			else
 #endif
-			{
-				AssemblyBuilder assemblyBuilder;
+            {
+                AssemblyBuilder assemblyBuilder;
 				try
 				{
-					assemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(
-						assemblyName,
+#if !NETCOREAPP2_0
+                    assemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(
+#else
+                    assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(
+#endif
+                        assemblyName,
 						AssemblyBuilderAccess.Run);
 				}
 				catch (ArgumentException ex)
@@ -374,8 +387,12 @@ namespace Telerik.JustMock.Core.Castle.DynamicProxy
 #endif
 				}
 
-				var module = assemblyBuilder.DefineDynamicModule(moduleName, false);
-				return module;
+#if !NETCOREAPP2_0
+                var module = assemblyBuilder.DefineDynamicModule(moduleName, false);
+#else
+                var module = assemblyBuilder.DefineDynamicModule(moduleName);
+#endif
+                return module;
 			}
 		}
 
@@ -386,24 +403,24 @@ namespace Telerik.JustMock.Core.Castle.DynamicProxy
 			return MockingUtil.GetStrongAssemblyName(name, keyPairStream);
 		}
 
-#if !SILVERLIGHT
-		/// <summary>
-		///   Saves the generated assembly with the name and directory information given when this <see cref = "ModuleScope" /> instance was created (or with
-		///   the <see cref = "DEFAULT_FILE_NAME" /> and current directory if none was given).
-		/// </summary>
-		/// <remarks>
-		///   <para>
-		///     This method stores the generated assembly in the directory passed as part of the module information specified when this instance was
-		///     constructed (if any, else the current directory is used). If both a strong-named and a weak-named assembly
-		///     have been generated, it will throw an exception; in this case, use the <see cref = "SaveAssembly (bool)" /> overload.
-		///   </para>
-		///   <para>
-		///     If this <see cref = "ModuleScope" /> was created without indicating that the assembly should be saved, this method does nothing.
-		///   </para>
-		/// </remarks>
-		/// <exception cref = "InvalidOperationException">Both a strong-named and a weak-named assembly have been generated.</exception>
-		/// <returns>The path of the generated assembly file, or null if no file has been generated.</returns>
-		public string SaveAssembly()
+#if (!SILVERLIGHT && !NETCOREAPP2_0)
+        /// <summary>
+        ///   Saves the generated assembly with the name and directory information given when this <see cref = "ModuleScope" /> instance was created (or with
+        ///   the <see cref = "DEFAULT_FILE_NAME" /> and current directory if none was given).
+        /// </summary>
+        /// <remarks>
+        ///   <para>
+        ///     This method stores the generated assembly in the directory passed as part of the module information specified when this instance was
+        ///     constructed (if any, else the current directory is used). If both a strong-named and a weak-named assembly
+        ///     have been generated, it will throw an exception; in this case, use the <see cref = "SaveAssembly (bool)" /> overload.
+        ///   </para>
+        ///   <para>
+        ///     If this <see cref = "ModuleScope" /> was created without indicating that the assembly should be saved, this method does nothing.
+        ///   </para>
+        /// </remarks>
+        /// <exception cref = "InvalidOperationException">Both a strong-named and a weak-named assembly have been generated.</exception>
+        /// <returns>The path of the generated assembly file, or null if no file has been generated.</returns>
+        public string SaveAssembly()
 		{
 			if (!savePhysicalAssembly)
 			{

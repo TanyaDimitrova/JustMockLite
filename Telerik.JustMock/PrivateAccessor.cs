@@ -25,7 +25,9 @@ using Telerik.JustMock.Core;
 #if !COREFX
 using System.Security;
 using System.Security.Permissions;
+#if !NETCOREAPP2_0
 using System.Runtime.Remoting;
+#endif
 using Telerik.JustMock.Core.TransparentProxy;
 #endif
 
@@ -89,8 +91,8 @@ namespace Telerik.JustMock
 				{
 					if (instance != null)
 					{
-#if !COREFX
-						var realProxy = RemotingServices.GetRealProxy(instance) as MockingProxy;
+#if (!COREFX && !NETCOREAPP2_0)
+						var realProxy = MockingProxy.GetRealProxy(instance);
 						if (realProxy != null)
 							instance = realProxy.WrappedInstance;
 #endif
@@ -511,11 +513,11 @@ namespace Telerik.JustMock
 
 		private static bool CheckReflectionPermission()
 		{
-#if COREFX
+#if (COREFX || NETCOREAPP2_0)
 			return false;
 #else
-			try
-			{
+            try
+            {
 				new ReflectionPermission(ReflectionPermissionFlag.MemberAccess).Demand();
 				return true;
 			}

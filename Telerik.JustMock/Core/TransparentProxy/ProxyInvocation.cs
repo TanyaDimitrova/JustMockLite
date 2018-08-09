@@ -18,12 +18,15 @@
 using System;
 using System.Linq;
 using System.Reflection;
+#if !NETCOREAPP2_0
 using System.Runtime.Remoting;
 using System.Runtime.Remoting.Messaging;
+#endif
 using Telerik.JustMock.Core.Castle.DynamicProxy;
 
 namespace Telerik.JustMock.Core.TransparentProxy
 {
+#if !NETCOREAPP2_0
 	internal sealed class ProxyInvocation : IInvocation
 	{
 		private readonly IMethodCallMessage message;
@@ -119,4 +122,5 @@ namespace Telerik.JustMock.Core.TransparentProxy
 			get { throw new NotSupportedException(); }
 		}
 	}
+#endif
 }

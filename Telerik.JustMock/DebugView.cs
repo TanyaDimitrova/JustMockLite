@@ -176,8 +176,8 @@ namespace Telerik.JustMock
 			}
 		}
 
-#if DEBUG && !COREFX
-		public static void SaveProxyAssembly()
+#if (DEBUG && !COREFX && !NETCOREAPP2_0)
+        public static void SaveProxyAssembly()
 		{
             ProfilerInterceptor.GuardInternal(() => DynamicProxyMockFactory.SaveAssembly());
 		}

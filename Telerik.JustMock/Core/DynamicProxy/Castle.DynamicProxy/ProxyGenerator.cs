@@ -23,8 +23,10 @@ namespace Telerik.JustMock.Core.Castle.DynamicProxy
 	using System.Reflection;
 #if !SILVERLIGHT
 	using System.Runtime.InteropServices;
-	using System.Runtime.Remoting;
-	using System.Security;
+#if !NETCOREAPP2_0
+    using System.Runtime.Remoting;
+#endif
+    using System.Security;
 	using System.Security.Permissions;
 	using Telerik.JustMock.Core.Castle.Core.Internal;
 #endif
@@ -49,16 +51,16 @@ namespace Telerik.JustMock.Core.Castle.DynamicProxy
 		{
 			proxyBuilder = builder;
 
-#if !SILVERLIGHT
-			if (HasSecurityPermission())
+#if (!SILVERLIGHT && !NETCOREAPP2_0)
+            if (HasSecurityPermission())
 			{
 				Logger = new TraceLogger("Castle.DynamicProxy", LoggerLevel.Warn);
 			}
 #endif
-		}
+        }
 
-#if !SILVERLIGHT
-		private bool HasSecurityPermission()
+#if (!SILVERLIGHT && !NETCOREAPP2_0)
+        private bool HasSecurityPermission()
 		{
 			const SecurityPermissionFlag flag = SecurityPermissionFlag.ControlEvidence | SecurityPermissionFlag.ControlPolicy;
 			return new SecurityPermission(flag).IsGranted();
@@ -589,8 +591,8 @@ namespace Telerik.JustMock.Core.Castle.DynamicProxy
 			}
 
 			var isRemotingProxy = false;
-#if !SILVERLIGHT
-			if (target != null)
+#if (!SILVERLIGHT && !NETCOREAPP2_0)
+            if (target != null)
 			{
 				isRemotingProxy = RemotingServices.IsTransparentProxy(target);
 

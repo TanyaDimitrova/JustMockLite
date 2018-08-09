@@ -15,14 +15,16 @@
 namespace Telerik.JustMock.Core.Castle.DynamicProxy
 {
 	using System;
-	using System.Runtime.Remoting;
+#if !NETCOREAPP2_0
+    using System.Runtime.Remoting;
+#endif
 
-	internal class ProxyUtil
+    internal class ProxyUtil
 	{
 		public static object GetUnproxiedInstance(object instance)
 		{
-#if (!SILVERLIGHT)
-			if (!RemotingServices.IsTransparentProxy(instance))
+#if (!SILVERLIGHT && !NETCOREAPP2_0)
+            if (!RemotingServices.IsTransparentProxy(instance))
 #endif
 			{
 				var accessor = instance as IProxyTargetAccessor;
@@ -37,11 +39,11 @@ namespace Telerik.JustMock.Core.Castle.DynamicProxy
 
 		public static Type GetUnproxiedType(object instance)
 		{
-#if (!SILVERLIGHT)
+#if (!SILVERLIGHT && !NETCOREAPP2_0)
 			if (!RemotingServices.IsTransparentProxy(instance))
 #endif
-			{
-				var accessor = instance as IProxyTargetAccessor;
+            {
+                var accessor = instance as IProxyTargetAccessor;
 
 				if (accessor != null)
 				{
@@ -64,13 +66,13 @@ namespace Telerik.JustMock.Core.Castle.DynamicProxy
 
 		public static bool IsProxy(object instance)
 		{
-#if (!SILVERLIGHT)
+#if (!SILVERLIGHT && !NETCOREAPP2_0)
 			if (RemotingServices.IsTransparentProxy(instance))
 			{
 				return true;
 			}
 #endif
-			return instance is IProxyTargetAccessor;
+            return instance is IProxyTargetAccessor;
 		}
 
 		public static bool IsProxyType(Type type)

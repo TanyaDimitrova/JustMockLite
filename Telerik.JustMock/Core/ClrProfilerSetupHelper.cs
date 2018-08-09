@@ -80,11 +80,17 @@ namespace Telerik.JustMock.Core
 		private const string SystemEnvironmentKeyName = @"HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment";
 		private const string UserEnvironmentKeyName = @"HKEY_CURRENT_USER\Environment";
 
-		private const string CorGeneralProfilerKey = "COR_PROFILER";
-		private const string CorGeneralEnableProfilingKey = "COR_ENABLE_PROFILING";
-		private const string CorGeneralProfilerPathKey = "COR_PROFILER_PATH";
+#if NETCOREAPP2_0
+        private const string CorGeneralProfilerKey = "CORECLR_PROFILER";
+		private const string CorGeneralEnableProfilingKey = "CORECLR_ENABLE_PROFILING";
+		private const string CorGeneralProfilerPathKey = "CORECLR_PROFILER_PATH";
+#else
+        private const string CorGeneralProfilerKey = "COR_PROFILER";
+        private const string CorGeneralEnableProfilingKey = "COR_ENABLE_PROFILING";
+        private const string CorGeneralProfilerPathKey = "COR_PROFILER_PATH";
+#endif
 
-		private const string ProcessEnvironmentLocationDescription = "process environment";
+        private const string ProcessEnvironmentLocationDescription = "process environment";
 		private const string CurrentUserLocationDescription = "current user registry setting";
 		private const string CurrentUser32LocationDescription = "current user 32-bit registry setting";
 		private const string SystemEnvironmentLocationDescription = "global system environment";
@@ -94,15 +100,18 @@ namespace Telerik.JustMock.Core
 		{
 			var locationsBuilder = new StringBuilder("\n");
 
-			CheckRegistryLocation(NetFxCurrentUserKeyName, CurrentUserLocationDescription, locationsBuilder);
+#if !NETCOREAPP2_0
+            CheckRegistryLocation(NetFxCurrentUserKeyName, CurrentUserLocationDescription, locationsBuilder);
 			CheckRegistryLocation(NetFxCurrentUserKeyNameX32, CurrentUser32LocationDescription, locationsBuilder);
 			CheckRegistryLocation(SystemEnvironmentKeyName, SystemEnvironmentLocationDescription, locationsBuilder);
 			CheckRegistryLocation(UserEnvironmentKeyName, UserEnvironmentLocationDescription, locationsBuilder);
+#endif
 			CheckProcessEnvironment(locationsBuilder);
 
 			return locationsBuilder.ToString().TrimEnd();
 		}
 
+#if !NETCOREAPP2_0
 		private static void CheckRegistryLocation(string keyName, string locationDescription, StringBuilder locationsBuilder)
 		{
 			try
@@ -122,8 +131,9 @@ namespace Telerik.JustMock.Core
 				AddError(locationDescription, locationsBuilder);
 			}
 		}
+#endif
 
-		private static void CheckProcessEnvironment(StringBuilder locationsBuilder)
+        private static void CheckProcessEnvironment(StringBuilder locationsBuilder)
 		{
 			try
 			{

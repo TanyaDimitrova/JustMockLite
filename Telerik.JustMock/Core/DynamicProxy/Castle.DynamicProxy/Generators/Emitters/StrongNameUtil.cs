@@ -34,12 +34,12 @@ namespace Telerik.JustMock.Core.Castle.DynamicProxy.Generators.Emitters
 #endif
 		static StrongNameUtil()
 		{
-#if SILVERLIGHT
+#if SILVERLIGHT || NETCOREAPP2_0
 			CanStrongNameAssembly = true;
 #else
-			//idea after http://blogs.msdn.com/dmitryr/archive/2007/01/23/finding-out-the-current-trust-level-in-asp-net.aspx
-			try
-			{
+            //idea after http://blogs.msdn.com/dmitryr/archive/2007/01/23/finding-out-the-current-trust-level-in-asp-net.aspx
+            try
+            {
 				new SecurityPermission(SecurityPermissionFlag.UnmanagedCode).Demand();
 				CanStrongNameAssembly = true;
 			}

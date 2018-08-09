@@ -16,7 +16,11 @@ namespace Telerik.JustMock.Tests
 		{
 			if (moduleBuilder == null)
 			{
+#if !NETCOREAPP2_0
 				var assemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(new AssemblyName(ModuleName), AssemblyBuilderAccess.Run);
+#else
+				var assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName(ModuleName), AssemblyBuilderAccess.Run);
+#endif
 				moduleBuilder = assemblyBuilder.DefineDynamicModule(ModuleName);
 			}
 
