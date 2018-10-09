@@ -34,7 +34,7 @@ namespace Telerik.JustMock.AutoMock.Ninject.Activation.Strategies
         {
             get
             {
-                #if !NO_LCG && !SILVERLIGHT
+                #if !NO_LCG
                 return Settings.InjectNonPublic ? (DefaultFlags | BindingFlags.NonPublic) : DefaultFlags;
                 #else
                 return DefaultFlags;

@@ -97,10 +97,7 @@ namespace Telerik.JustMock
 		/// This class appears only in compiler errors.
 		/// </summary>
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public struct EverythingExcept : IDictionary, IList, IAsyncResult, IFormatProvider, IComparer, IConvertible, IEqualityComparer, IDisposable
-#if !SILVERLIGHT && !PORTABLE
-, ICloneable
-#endif
+		public struct EverythingExcept : IDictionary, IList, IAsyncResult, IFormatProvider, IComparer, IConvertible, IEqualityComparer, IDisposable, ICloneable
 		{
 			#region Implicit conversions
 			/// <summary> </summary>
@@ -369,7 +366,6 @@ namespace Telerik.JustMock
 			public static implicit operator System.Collections.BitArray(EverythingExcept _) { return default(System.Collections.BitArray); }
 			#endregion
 
-#if !PORTABLE
 			/// <summary> </summary>
 			/// <param name="_"></param>
 			/// <returns></returns>
@@ -378,9 +374,7 @@ namespace Telerik.JustMock
 			/// <param name="_"></param>
 			/// <returns></returns>
 			public static implicit operator System.Reflection.ParameterModifier[](EverythingExcept _) { return default(System.Reflection.ParameterModifier[]); }
-#endif
 
-#if !SILVERLIGHT && !PORTABLE
 			/// <summary> </summary>
 			/// <param name="_"></param>
 			/// <returns></returns>
@@ -420,7 +414,6 @@ namespace Telerik.JustMock
 				throw new NotImplementedException();
 			}
 			#endregion
-#endif
 
 			#region Interface implementations
 

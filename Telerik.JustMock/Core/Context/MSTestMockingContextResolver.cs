@@ -23,12 +23,7 @@ namespace Telerik.JustMock.Core.Context
 {
 	internal class MSTestMockingContextResolver : HierarchicalTestFrameworkContextResolver
 	{
-#if SILVERLIGHT
-		private const string MstestAssemblyName = "Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight";
-#else
 		private const string MstestAssemblyName = "Microsoft.VisualStudio.QualityTools.UnitTestFramework";
-#endif
-
 		private const string MstestAssertionFailedName = "Microsoft.VisualStudio.TestTools.UnitTesting.AssertFailedException, " + MstestAssemblyName;
 
 		public MSTestMockingContextResolver()
@@ -47,7 +42,6 @@ namespace Telerik.JustMock.Core.Context
 			get { return FindType(MstestAssertionFailedName, false) != null; }
 		}
 
-#if !SILVERLIGHT
 		private const int DefaultGcFrequency = 50;
 		private int createdRepoCount;
 		private int lastGcCount;
@@ -98,6 +92,5 @@ namespace Telerik.JustMock.Core.Context
 				lastGcCount = gen2Collections;
 			}
 		}
-#endif
 	}
 }

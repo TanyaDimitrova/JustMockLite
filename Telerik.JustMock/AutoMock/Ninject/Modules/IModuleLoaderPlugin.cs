@@ -7,7 +7,6 @@
 // See the file LICENSE.txt for details.
 // 
 #endregion
-#if !SILVERLIGHT
 #region Using Directives
 using System;
 using System.Collections.Generic;
@@ -33,4 +32,3 @@ namespace Telerik.JustMock.AutoMock.Ninject.Modules
         void LoadModules(IEnumerable<string> filenames);
     }
 }
-#endif

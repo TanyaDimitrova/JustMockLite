@@ -11,9 +11,6 @@ namespace Telerik.JustMock.AutoMock.Ninject.Infrastructure
 {
     using System;
     using System.Runtime.CompilerServices;
-#if SILVERLIGHT
-    using WeakReference = BaseWeakReference;
-#endif
 
     /// <summary>
     /// Weak reference that can be used in collections. It is equal to the

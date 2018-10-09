@@ -22,7 +22,7 @@ namespace Telerik.JustMock.AutoMock.Ninject.Infrastructure.Language
     public static class ExtensionsForMemberInfo
     {
         const BindingFlags DefaultFlags = BindingFlags.Public | BindingFlags.Instance;
-#if !NO_LCG && !SILVERLIGHT
+#if !NO_LCG
         const BindingFlags Flags = DefaultFlags | BindingFlags.NonPublic;
 #else
         const BindingFlags Flags = DefaultFlags;

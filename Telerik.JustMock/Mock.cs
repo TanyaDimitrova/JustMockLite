@@ -21,10 +21,7 @@ using Telerik.JustMock.Core.Behaviors;
 using Telerik.JustMock.Core.Context;
 using Telerik.JustMock.Expectations;
 using Telerik.JustMock.Expectations.Abstraction;
-
-#if !PORTABLE
 using Telerik.JustMock.Expectations.Abstraction.Local;
-#endif
 
 namespace Telerik.JustMock
 {
@@ -33,16 +30,6 @@ namespace Telerik.JustMock
 	/// </summary>
 	public partial class Mock
 	{
-		static Mock()
-		{
-#if SILVERLIGHT && !PORTABLE
-			if (-1 == typeof(object).Assembly.FullName.IndexOf("PublicKeyToken=7cec85d7bea7798e", StringComparison.OrdinalIgnoreCase))
-			{
-				throw new InvalidOperationException("Telerik.JustMock.Silverlight should only be used inside the Silverlight runtime. For all other runtimes reference Telerik.JustMock instead.");
-			}
-#endif
-		}
-
 		/// <summary>
 		/// Gets a value indicating whether the JustMock profiler is enabled.
 		/// </summary>
@@ -66,7 +53,6 @@ namespace Telerik.JustMock
 			}
 		}
 
-#if !PORTABLE
 		/// <summary>
 		/// Arrange and assert expectations on language features like C# 7 local functions.
 		/// </summary>
@@ -77,7 +63,6 @@ namespace Telerik.JustMock
 				return ProfilerInterceptor.GuardInternal(() => new LocalExpectation());
 			}
 		}
-#endif
 
 #region Raise Event methods
 

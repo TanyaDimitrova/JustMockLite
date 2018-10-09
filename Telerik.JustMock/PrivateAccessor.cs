@@ -40,7 +40,6 @@ namespace Telerik.JustMock
 	/// </summary>
 	/// <remarks>
 	/// When the profiler is enabled, PrivateAccessor acquires additional power:
-	/// - It can even be used to access all kinds of non-public members in Silverlight (and when running in partial trust in general).
 	/// - All calls made through PrivateAccessor are always made with full trust (unrestricted) permissions.
 	/// 
 	/// You can assign a PrivateAccessor to a dynamic variable and access it as if you're referencing the original object:
@@ -329,7 +328,6 @@ namespace Telerik.JustMock
 			}
 		}
 
-#if !PORTABLE
 		/// <summary>
 		/// Non public ref return interface for mocking.
 		/// </summary>
@@ -340,7 +338,6 @@ namespace Telerik.JustMock
 				return ProfilerInterceptor.GuardInternal(() => new PrivateRefReturnAccessor(this.instance, this.type));
 			}
 		}
-#endif
 
 		private void CheckMemberInfo(string kind, string name, MemberInfo mi)
 		{

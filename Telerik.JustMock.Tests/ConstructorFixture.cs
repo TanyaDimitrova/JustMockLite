@@ -39,9 +39,6 @@ using AssertionException = Xunit.Sdk.XunitException;
 #else
 using AssertionException = Xunit.Sdk.AssertException;
 #endif
-#elif VSTEST_PORTABLE
-using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
-using AssertionException = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.AssertFailedException;
 #else
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using AssertionException = Microsoft.VisualStudio.TestTools.UnitTesting.AssertFailedException;
@@ -64,18 +61,12 @@ namespace Telerik.JustMock.Tests
 
 #if !(COREFX && LITE_EDITION)
 		[TestMethod, TestCategory("Lite"), TestCategory("Constructor")]
-#if SILVERLIGHT
-		[Ignore, Description("SL instance constructor mocking not implemented")]
-#endif
 		public void ShouldSkipBaseConstructorWhenMocked()
 		{
 			Assert.NotNull(Mock.Create<Foo>());
 		}
 
 		[TestMethod, TestCategory("Lite"), TestCategory("Constructor")]
-#if SILVERLIGHT
-		[Ignore, Description("SL instance constructor mocking not implemented")]
-#endif
 		public void ShouldSkipBaseConstructorOfAbstractClassWhenMocked()
 		{
 			Assert.NotNull(Mock.Create<AbstractFoo>());

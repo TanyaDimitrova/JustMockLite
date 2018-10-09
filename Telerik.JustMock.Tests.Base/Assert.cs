@@ -22,8 +22,6 @@ using System;
 using FrameworkAssert = NUnit.Framework.Assert;
 #elif XUNIT
 using FrameworkAssert = Xunit.Assert;
-#elif PORTABLE
-using FrameworkAssert = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.Assert;
 #else
 using FrameworkAssert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 #endif
@@ -50,20 +48,6 @@ namespace Telerik.JustMock.Tests
 				// Test pass
 				return ex;
 			}
-#if PORTABLE
-			catch (System.Reflection.TargetInvocationException ex)
-			{
-				var inner = ex.InnerException;
-				if (inner is T)
-				{
-					return inner;
-				}
-				else
-				{
-					FrameworkAssert.Fail(String.Format("Wrong exception type thrown. Expected {0}, got {1}.", typeof(T), inner.GetType()));
-				}
-			}
-#endif
 			catch (Exception ex)
 			{
 #if XUNIT

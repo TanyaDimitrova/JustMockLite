@@ -29,11 +29,7 @@ namespace Telerik.JustMock.AutoMock.Ninject.Injection
         /// <returns>The created injector.</returns>
         public ConstructorInjector Create(ConstructorInfo constructor)
         {
-            #if SILVERLIGHT
-            var dynamicMethod = new DynamicMethod(GetAnonymousMethodName(), typeof(object), new[] { typeof(object[]) });
-            #else
             var dynamicMethod = new DynamicMethod(GetAnonymousMethodName(), typeof(object), new[] { typeof(object[]) }, true);
-            #endif
 
             ILGenerator il = dynamicMethod.GetILGenerator();
 
@@ -69,11 +65,7 @@ namespace Telerik.JustMock.AutoMock.Ninject.Injection
             il.Emit(OpCodes.Ldarg_1);
             EmitUnboxOrCast(il, property.PropertyType);
 
-            #if !SILVERLIGHT
             bool injectNonPublic = Settings.InjectNonPublic;
-            #else
-            const bool injectNonPublic = false;
-            #endif // !SILVERLIGHT
 
             EmitMethodCall(il, property.GetSetMethod(injectNonPublic));
             il.Emit(OpCodes.Ret);

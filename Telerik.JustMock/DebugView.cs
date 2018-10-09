@@ -183,12 +183,7 @@ namespace Telerik.JustMock
 		}
 #endif
 
-		internal static Action<string> DebugTrace = s =>
-#if PORTABLE
-			System.Diagnostics.Debug.WriteLine(s);
-#else
-			System.Diagnostics.Trace.WriteLine(s);
-#endif
+		internal static Action<string> DebugTrace = s => System.Diagnostics.Trace.WriteLine(s);
 	}
 }
 

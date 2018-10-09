@@ -43,9 +43,6 @@ using AssertionException = Xunit.Sdk.XunitException;
 #else
 using AssertionException = Xunit.Sdk.AssertException;
 #endif
-#elif VSTEST_PORTABLE
-using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
-using AssertionException = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.AssertFailedException;
 #else
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using AssertionException = Microsoft.VisualStudio.TestTools.UnitTesting.AssertFailedException;
@@ -206,7 +203,7 @@ namespace Telerik.JustMock.Tests
 		}
 
 
-#if !SILVERLIGHT && !LITE_EDITION
+#if !LITE_EDITION
 		public interface ICollectionSource
 		{
 			IEnumerable<T> GetCollection<T>();
@@ -219,15 +216,6 @@ namespace Telerik.JustMock.Tests
 			Mock.Arrange(() => mock.GetCollection<int>()).ReturnsCollection(new[] { 1, 2, 3 }.AsQueryable());
 			Assert.Equal(6, mock.GetCollection<int>().Sum());
 		}
-#endif
-
-#if SILVERLIGHT || PORTABLE
-		
-		public interface ICloneable
-		{
-			object Clone();
-		}
-
 #endif
 
 

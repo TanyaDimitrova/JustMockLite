@@ -50,15 +50,11 @@ namespace Telerik.JustMock.Core
 		{
 			var message = details + ProfilerNeededMessage;
 #if !LITE_EDITION
-#if !SILVERLIGHT
 			var detectedProfilers = ClrProfilerSetupHelper.GetEnabledProfilersLocations();
 			if (!String.IsNullOrEmpty(detectedProfilers))
 			{
 				message += "\nDetected active third-party profilers:" + detectedProfilers + "\nDisable the profilers or link them from the JustMock configuration utility. Restart the test runner and, if necessary, Visual Studio after linking.";
 			}
-#else
-			message += " If you have enabled other profiler-based tools (e.g. code coverage, performance or memory profilers, mocking tools, debugging tools), either disable them or link them from the JustMock configuration utility. Restart the test runner and, if necessary, Visual Studio after linking.";
-#endif
 #endif
 			return message;
 		}

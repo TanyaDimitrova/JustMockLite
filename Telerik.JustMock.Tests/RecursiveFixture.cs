@@ -43,19 +43,11 @@ using AssertionException = Xunit.Sdk.XunitException;
 #else
 using AssertionException = Xunit.Sdk.AssertException;
 #endif
-#elif VSTEST_PORTABLE
-using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
-using AssertionException = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.AssertFailedException;
 #else
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using AssertionException = Microsoft.VisualStudio.TestTools.UnitTesting.AssertFailedException;
 #endif
 #endregion
-
-
-#if PORTABLE
-[assembly: Telerik.JustMock.MockedType(typeof(Telerik.JustMock.Tests.RecursiveFixture.ValidateMember))]
-#endif
 
 namespace Telerik.JustMock.Tests
 {
@@ -150,8 +142,6 @@ namespace Telerik.JustMock.Tests
 			Mock.Assert(() => foo.Bar.Do(ping));
 		}
 
-#if !SILVERLIGHT
-
 		[TestMethod, TestCategory("Lite"), TestCategory("Recursive")]
 		public void ShouldNotAutoCreateNestedInstanceWhenSetExplictly()
 		{
@@ -163,8 +153,6 @@ namespace Telerik.JustMock.Tests
 
 			Assert.Equal(10, foo.Bar.Echo());
 		}
-
-#endif
 
 		[TestMethod, TestCategory("Lite"), TestCategory("Recursive")]
 		public void ShouldMockIEnumerableImplementer()

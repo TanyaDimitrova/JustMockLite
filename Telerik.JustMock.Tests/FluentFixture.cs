@@ -40,9 +40,6 @@ using AssertionException = Xunit.Sdk.XunitException;
 #else
 using AssertionException = Xunit.Sdk.AssertException;
 #endif
-#elif VSTEST_PORTABLE
-using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
-using AssertionException = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.AssertFailedException;
 #else
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using AssertionException = Microsoft.VisualStudio.TestTools.UnitTesting.AssertFailedException;
@@ -278,8 +275,6 @@ namespace Telerik.JustMock.Tests
 			target.Assert(x => x.Echo(someValue));
 		}
 
-#if !SILVERLIGHT
-
 		[TestMethod, TestCategory("Lite"), TestCategory("Fluent")]
 		public void ShouldAssertMockingInternalMember()
 		{
@@ -291,8 +286,6 @@ namespace Telerik.JustMock.Tests
 
 			Assert.NotNull(siteOptionsEntity.MessageOperationsHelper);
 		}
-
-#endif
 
 		public class HardCodedSiteOptionsEntity
 		{

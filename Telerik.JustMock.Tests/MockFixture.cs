@@ -53,9 +53,6 @@ using AssertionException = Xunit.Sdk.XunitException;
 #else
 using AssertionException = Xunit.Sdk.AssertException;
 #endif
-#elif VSTEST_PORTABLE
-using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
-using AssertionException = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.AssertFailedException;
 #else
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using AssertionException = Microsoft.VisualStudio.TestTools.UnitTesting.AssertFailedException;
@@ -1402,26 +1399,15 @@ namespace Telerik.JustMock.Tests
 			Assert.Equal(15, ident.Id);
 		}
 
-#if !SILVERLIGHT
-		[TestMethod, TestCategory("Elevated"), TestCategory("Lite"), TestCategory("Mock")]
-		public void ShouldNotCreateProxyIfNotNecessary()
-		{
-			var mock = Mock.Create<Poco>();
-			Mock.Arrange(() => mock.Data).Returns(10);
-			Assert.Equal(10, mock.Data);
-			if (Mock.IsProfilerEnabled)
-				Assert.Same(typeof(Poco), mock.GetType());
-		}
-#elif !LITE_EDITION
-		[TestMethod, TestCategory("Elevated"), TestCategory("Mock")]
-		public void ShouldNotCreateProxyIfNotNecessary()
-		{
-			var mock = Mock.Create<Poco>(Constructor.Mocked);
-			Mock.Arrange(() => mock.Data).Returns(10);
-			Assert.Equal(10, mock.Data);
-			Assert.Same(typeof(Poco), mock.GetType());
-		}
-#endif
+        [TestMethod, TestCategory("Elevated"), TestCategory("Lite"), TestCategory("Mock")]
+        public void ShouldNotCreateProxyIfNotNecessary()
+        {
+            var mock = Mock.Create<Poco>();
+            Mock.Arrange(() => mock.Data).Returns(10);
+            Assert.Equal(10, mock.Data);
+            if (Mock.IsProfilerEnabled)
+                Assert.Same(typeof(Poco), mock.GetType());
+        }
 
 #if LITE_EDITION && !COREFX
 		[TestMethod, TestCategory("Lite"), TestCategory("Mock")]
@@ -1431,7 +1417,7 @@ namespace Telerik.JustMock.Tests
 		}
 #endif
 
-		public class Poco // should be inheritable but shouldn't be abstract
+        public class Poco // should be inheritable but shouldn't be abstract
 		{
 			public virtual int Data { get { return 0; } }
 		}
@@ -2187,7 +2173,7 @@ namespace Telerik.JustMock.Tests
 			bool IsAllowed(ShortFlags flags);
 		}
 
-#if !DOTNET35 && !SILVERLIGHT && !WINDOWS_PHONE
+#if !DOTNET35 && !WINDOWS_PHONE
 		[TestMethod, TestCategory("Lite"), TestCategory("DotNetCore"), TestCategory("Regression")]
 		public void ShouldInterceptDynamicProxyMethodsFromMultipleThreads()
 		{
@@ -2237,7 +2223,6 @@ namespace Telerik.JustMock.Tests
 			Assert.Equal("mock", identity.Name);
 		}
 
-#if !PORTABLE
 		[TestMethod, TestCategory("Lite"), TestCategory("Mock")]
 		public void ShouldMockTypesFromReflectionNamespace()
 		{
@@ -2259,9 +2244,7 @@ namespace Telerik.JustMock.Tests
 				Assert.Equal("name", mock.Name);
 			}
 		}
-#endif
 
-#if !SILVERLIGHT && !WINDOWS_PHONE
 		[TestMethod, TestCategory("Lite"), TestCategory("Mock")]
 		public void ShouldMockWeakReference()
 		{
@@ -2269,7 +2252,6 @@ namespace Telerik.JustMock.Tests
 			Mock.Arrange(() => weak.IsAlive).Returns(true);
 			Assert.True(weak.IsAlive);
 		}
-#endif
 
 		public class CtorWithDefaults
 		{
@@ -2288,7 +2270,6 @@ namespace Telerik.JustMock.Tests
 			Assert.Equal(5, mock.A);
 		}
 
-#if !PORTABLE
 		public interface ITwoFace
 		{
 			int GetFace1();
@@ -2309,7 +2290,6 @@ namespace Telerik.JustMock.Tests
 			Assert.Equal(10, mock.GetFace1());
 			Assert.Equal(0, mock.GetFace2());
 		}
-#endif
 
 		public class StaticCtor
 		{

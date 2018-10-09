@@ -215,7 +215,7 @@ namespace Telerik.JustMock.AutoMock.Ninject.Components
             return constructor;
         }
 
-#if SILVERLIGHT_30 || SILVERLIGHT_20 || WINDOWS_PHONE || NETCF_35
+#if WINDOWS_PHONE || NETCF_35
         private class HashSet<T>
         {
             private IDictionary<T, object> data = new Dictionary<T,object>();

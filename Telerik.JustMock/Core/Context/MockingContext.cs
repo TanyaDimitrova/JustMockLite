@@ -21,9 +21,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Telerik.JustMock.Diagnostics;
-#if !PORTABLE
 using Telerik.JustMock.Helpers;
-#endif
 
 namespace Telerik.JustMock.Core.Context
 {
@@ -74,9 +72,7 @@ namespace Telerik.JustMock.Core.Context
 
 			LocalMockingContextResolver.RetireRepository();
 
-#if !PORTABLE
 			DynamicTypeHelper.Reset();
-#endif
 		}
 
 		public static void Fail(string message, params object[] args)
@@ -91,14 +87,8 @@ namespace Telerik.JustMock.Core.Context
 
 		public static string GetStackTrace(string indent)
 		{
-#if SILVERLIGHT
-			var trace = new System.Diagnostics.StackTrace().ToString();
-#elif PORTABLE
-			var trace = new StackTrace().ToString();
-#else
 			var skipCount = new System.Diagnostics.StackTrace().GetFrames().TakeWhile(frame => frame.GetMethod().DeclaringType.Assembly == typeof(DebugView).Assembly).Count();
 			var trace = new System.Diagnostics.StackTrace(skipCount, true).ToString();
-#endif
 
 			return "\n".Join(trace
 					.Split('\n')
@@ -131,14 +121,6 @@ namespace Telerik.JustMock.Core.Context
 
 		static MockingContext()
 		{
-#if PORTABLE
-			if (VisualStudioPortableContextResolver.IsAvailable)
-				registeredContextResolvers.Add(new VisualStudioPortableContextResolver());
-			if (XamarinAndroidNUnitContextResolver.IsAvailable)
-				registeredContextResolvers.Add(new XamarinAndroidNUnitContextResolver());
-			if (XamarinIosNUnitContextResolver.IsAvailable)
-				registeredContextResolvers.Add(new XamarinIosNUnitContextResolver());
-#else
 			if (MSTestMockingContextResolver.IsAvailable)
 				registeredContextResolvers.Add(new MSTestMockingContextResolver());
 			if (MSTestV2MockingContextResolver.IsAvailable)
@@ -157,7 +139,6 @@ namespace Telerik.JustMock.Core.Context
 				registeredContextResolvers.Add(new MSpecContextResolver());
 			if (MbUnitContextResolver.IsAvailable)
 				registeredContextResolvers.Add(new MbUnitContextResolver());
-#endif
 
 			foreach (var resolver in registeredContextResolvers)
 			{
@@ -228,10 +209,5 @@ namespace Telerik.JustMock.Core.Context
 				Fail(sb.ToString());
 			}
 		}
-
-#if PORTABLE
-		private class StackTraceGeneratorException : Exception
-		{ }
-#endif
 	}
 }

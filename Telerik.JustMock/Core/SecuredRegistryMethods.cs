@@ -63,7 +63,7 @@ namespace Telerik.JustMock.Core
 
 		private static bool GetRegistryValue(bool currentUser, string keyName, string valueName, StringBuilder outValue)
 		{
-#if (!SILVERLIGHT && !NETCOREAPP2_0)
+#if (!NETCOREAPP2_0)
             using (RegistryKey registryKey = currentUser ? Registry.CurrentUser : Registry.LocalMachine)
 			{
 				using (var key = registryKey.OpenSubKey(keyName))
@@ -83,7 +83,7 @@ namespace Telerik.JustMock.Core
 
 		private static bool SetRegistryValue(bool currentUser, string keyName, string valueName, string value)
 		{
-#if (!SILVERLIGHT && !NETCOREAPP2_0)
+#if (!NETCOREAPP2_0)
             using (RegistryKey registryKey = currentUser ? Registry.CurrentUser : Registry.LocalMachine)
 			{
 				using (var key = registryKey.OpenSubKey(keyName, true))

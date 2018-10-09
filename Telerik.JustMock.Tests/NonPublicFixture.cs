@@ -21,7 +21,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-
 #region JustMock Test Attributes
 #if NUNIT
 using NUnit.Framework;
@@ -44,16 +43,11 @@ using AssertionException = Xunit.Sdk.XunitException;
 #else
 using AssertionException = Xunit.Sdk.AssertException;
 #endif
-#elif VSTEST_PORTABLE
-using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
-using AssertionException = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.AssertFailedException;
 #else
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using AssertionException = Microsoft.VisualStudio.TestTools.UnitTesting.AssertFailedException;
 #endif
 #endregion
-
-
 
 namespace Telerik.JustMock.Tests
 {
@@ -191,8 +185,6 @@ namespace Telerik.JustMock.Tests
 			Assert.Throws<MissingMemberException>(() => Mock.NonPublic.Arrange(foo, "ExecuteProtected"));
 		}
 
-#if !SILVERLIGHT
-
 		[TestMethod, TestCategory("Lite"), TestCategory("NonPublic")]
 		public void ShouldCreateMockFromClassHavingAbstractInternalMethodInBase()
 		{
@@ -222,7 +214,6 @@ namespace Telerik.JustMock.Tests
 			Mock.NonPublic.Assert(baz, targetMethod);
 		}
 
-#if !PORTABLE
 		[TestMethod, TestCategory("Lite"), TestCategory("DotNetCore"), TestCategory("NonPublic")]
 		public void ShouldAssertNonPublicCallWhenOccurrenceIsApplied()
 		{
@@ -246,7 +237,6 @@ namespace Telerik.JustMock.Tests
 			Assert.Equal(1, Mock.NonPublic.GetTimesCalled(mock, "MethodToMock"));
 			Assert.Equal(1, Mock.NonPublic.GetTimesCalled(mock, typeof(Bar).GetMethod("MethodToMock", BindingFlags.NonPublic | BindingFlags.Instance)));
 		}
-#endif
 
 		public class Bar
 		{
@@ -281,8 +271,6 @@ namespace Telerik.JustMock.Tests
 
 			private StringBuilder builder;
 		}
-
-#endif
 
 		internal abstract class FooAbstract
 		{

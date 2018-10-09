@@ -55,19 +55,12 @@ namespace Telerik.JustMock.Core
 				typeof(IntPtr),
 				typeof(UIntPtr),
 				typeof(void),
-#if !PORTABLE
 				typeof(AppDomain),
 				typeof(TypedReference),
 				typeof(RuntimeArgumentHandle),
 				Type.GetType("System.ContextBoundObject"),
 				Type.GetType("System.ArgIterator"),
-#endif
-#if !SILVERLIGHT
 				Type.GetType("System.__ComObject"),
-#endif
-#if SILVERLIGHT
-				typeof(WeakReference),
-#endif
 			};
 
 		internal static IMockMixin GetMockMixin(object obj, Type objType)
@@ -188,12 +181,7 @@ namespace Telerik.JustMock.Core
 		{
 			get
 			{
-				return this.isRetired
-					|| (this.parentRepository != null && this.parentRepository.IsRetired)
-#if !PORTABLE
- || !this.creatingThread.IsAlive
-#endif
-;
+				return this.isRetired || (this.parentRepository != null && this.parentRepository.IsRetired) || !this.creatingThread.IsAlive;
 			}
 			set
 			{
@@ -223,11 +211,7 @@ namespace Telerik.JustMock.Core
 				AttributesToAvoidReplicating.Add(unmockableAttr);
 #endif
 
-#if !PORTABLE
 			mockFactory = new DynamicProxyMockFactory();
-#else
-			mockFactory = new StaticProxy.StaticProxyMockFactory();
-#endif
 
 			ProfilerInterceptor.Initialize();
 		}
@@ -677,14 +661,12 @@ namespace Telerik.JustMock.Core
 				AddArrange(result);
 			}
 
-#if !PORTABLE
 			var createInstanceLambda = ActivatorCreateInstanceTBehavior.TryCreateArrangementExpression(callPattern.Method);
 			if (createInstanceLambda != null)
 			{
 				var createInstanceMethodMock = Arrange(createInstanceLambda, methodMockFactory);
 				ActivatorCreateInstanceTBehavior.Attach(result, createInstanceMethodMock);
 			}
-#endif
 
 			return result;
 		}
@@ -1662,7 +1644,6 @@ namespace Telerik.JustMock.Core
 			{
 				behaviorsToExecute.AddRange(mock.SupplementaryBehaviors);
 
-#if !PORTABLE
 				// explicitly add recursive mocking behavior for ref returns in order to set invocation result
 				if (invocation.Method.GetReturnType().IsByRef)
 				{
@@ -1672,7 +1653,6 @@ namespace Telerik.JustMock.Core
 								behavior is CallOriginalBehavior
 								|| (behavior is RecursiveMockingBehavior && ((RecursiveMockingBehavior)behavior).Type != RecursiveMockingBehaviorType.OnlyDuringAnalysis)));
 				}
-#endif
 			}
 
 			return behaviorsToExecute;

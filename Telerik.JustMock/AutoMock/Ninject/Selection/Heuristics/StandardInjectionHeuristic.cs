@@ -36,11 +36,7 @@ namespace Telerik.JustMock.AutoMock.Ninject.Selection.Heuristics
 
             if (propertyInfo != null)
             {
-#if !SILVERLIGHT
                 bool injectNonPublic = Settings.InjectNonPublic;
-#else
-                const bool injectNonPublic = false;
-#endif // !SILVERLIGHT
 
                 var setMethod = propertyInfo.GetSetMethod(injectNonPublic);
 

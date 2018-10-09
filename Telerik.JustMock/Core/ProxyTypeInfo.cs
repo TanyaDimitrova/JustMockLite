@@ -22,9 +22,7 @@ namespace Telerik.JustMock.Core
 {
     internal class ProxyTypeInfo
 	{
-#if !PORTABLE
         public Type ProxyType;
-#endif
 		public Dictionary<Type, object> Mixins = new Dictionary<Type, object>();
 	}
 }

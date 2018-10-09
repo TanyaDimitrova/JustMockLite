@@ -35,7 +35,7 @@ namespace Telerik.JustMock.AutoMock.Ninject.Selection
         {
             get
             {
-                #if !NO_LCG && !SILVERLIGHT
+                #if !NO_LCG
                 return Settings.InjectNonPublic ? (DefaultFlags | BindingFlags.NonPublic) : DefaultFlags;
                 #else
                 return DefaultFlags;
@@ -93,7 +93,7 @@ namespace Telerik.JustMock.AutoMock.Ninject.Selection
                 type.GetProperties(this.Flags)
                        .Select(p => p.GetPropertyFromDeclaredType(p, this.Flags))
                        .Where(p => this.InjectionHeuristics.Any(h => h.ShouldInject(p))));
-#if !SILVERLIGHT
+
             if (this.Settings.InjectParentPrivateProperties)
             {
                 for (Type parentType = type.BaseType; parentType != null; parentType = parentType.BaseType)
@@ -101,7 +101,6 @@ namespace Telerik.JustMock.AutoMock.Ninject.Selection
                     properties.AddRange(this.GetPrivateProperties(type.BaseType));
                 }
             }
-#endif
 
             return properties;
         }

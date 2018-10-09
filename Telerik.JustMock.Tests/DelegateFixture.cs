@@ -41,9 +41,6 @@ using AssertionException = Xunit.Sdk.XunitException;
 #else
 using AssertionException = Xunit.Sdk.AssertException;
 #endif
-#elif VSTEST_PORTABLE
-using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
-using AssertionException = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.AssertFailedException;
 #else
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using AssertionException = Microsoft.VisualStudio.TestTools.UnitTesting.AssertFailedException;
@@ -56,7 +53,6 @@ namespace Telerik.JustMock.Tests
 	[TestClass]
 	public class DelegateFixture
 	{
-#if !PORTABLE
 		[TestMethod, TestCategory("Lite"), TestCategory("DotNetCore"), TestCategory("Mock"), TestCategory("Delegate")]
 		public void ShouldCreateMockDelegate()
 		{
@@ -68,7 +64,6 @@ namespace Telerik.JustMock.Tests
 			Assert.True(declTypeName.Contains("Int32"));
 			Assert.True(declTypeName.Contains("String"));
 		}
-#endif
 
 		[TestMethod, TestCategory("Lite"), TestCategory("Mock"), TestCategory("Delegate")]
 		public void ShouldArrangeMockDelegateBehavior()
@@ -145,14 +140,12 @@ namespace Telerik.JustMock.Tests
 			Assert.Equal("result", actual);
 		}
 
-#if !PORTABLE
 		[TestMethod, TestCategory("Lite"), TestCategory("DotNetCore"), TestCategory("Mock"), TestCategory("Delegate")]
 		public void ShouldThrowWhenMockingAbstractDelegate()
 		{
 			Assert.Throws<MockException>(() => Mock.Create<Delegate>());
 			Assert.Throws<MockException>(() => Mock.Create<MulticastDelegate>());
 		}
-#endif
 
 		[TestMethod, TestCategory("Lite"), TestCategory("Mock"), TestCategory("Delegate")]
 		public void ShouldAssertDelegateCall()

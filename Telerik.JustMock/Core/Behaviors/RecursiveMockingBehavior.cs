@@ -164,7 +164,6 @@ namespace Telerik.JustMock.Core.Behaviors
 					.Invoke(null, new object[] { taskResultValue });
 			}
 
-#if !PORTABLE
 			if (mock == null && returnType.IsByRef)
 			{
 				var delegateType = typeof(object).Assembly.GetType("Telerik.JustMock.RefDelegate`1").MakeGenericType(new [] { returnType.GetElementType() });
@@ -175,7 +174,6 @@ namespace Telerik.JustMock.Core.Behaviors
 
 				mock = constructor.Invoke(new object[] { this, methodInfo.MethodHandle.GetFunctionPointer() });
 			}
-#endif
 
 			if (mock == null && MustReturnMock(invocation, checkPropertyOnTestFixture: true))
 			{
@@ -197,20 +195,16 @@ namespace Telerik.JustMock.Core.Behaviors
 			return mock;
 		}
 
-#if !PORTABLE
 		ref T GetDefaultRef<T>()
 		{
 			return ref DefaultRef<T>.Ref();
 		}
-#endif
 	}
 
-#if !PORTABLE
 	public sealed class DefaultRef<T>
 	{
 		static T value;
 
 		public static ref T Ref() { return ref DefaultRef<T>.value; }
 	}
-#endif
 }

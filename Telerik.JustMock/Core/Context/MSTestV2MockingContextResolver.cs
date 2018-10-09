@@ -64,7 +64,6 @@ namespace Telerik.JustMock.Core.Context
 			return !String.IsNullOrEmpty(valueStr) && int.TryParse(valueStr, out value) && value == 1;
 		}
 
-#if !SILVERLIGHT
 		protected override void OnMocksRepositoryCreated(MocksRepository repo)
 		{
 			// MSTest runs every test in a different thread. We'd like to collect Thread objects often so that their handle is released.
@@ -92,6 +91,5 @@ namespace Telerik.JustMock.Core.Context
 				lastGcCount = gen2Collections;
 			}
 		}
-#endif
 	}
 }

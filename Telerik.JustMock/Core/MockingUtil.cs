@@ -249,7 +249,7 @@ namespace Telerik.JustMock.Core
 					args[i] = Convert.ChangeType(args[i], paramType, System.Globalization.CultureInfo.CurrentCulture);
 			}
 
-#if !PORTABLE
+
 			var newCall = MockingUtil.CreateDynamicMethod<Func<object[], object>>(il =>
 				{
 					il.UnpackArgArray(OpCodes.Ldarg_0, ctor);
@@ -272,9 +272,6 @@ namespace Telerik.JustMock.Core
 						return MockingUtil.CreateInstance(type, args);
 					}
 				});
-#else
-			return MockingUtil.CreateInstance(type, args);
-#endif
 		}
 
 		public static object GetUninitializedObject(Type type)
@@ -308,7 +305,6 @@ namespace Telerik.JustMock.Core
 
 		internal static Type GetTypeFrom(string fullName)
 		{
-#if !PORTABLE
 			var type = AppDomain.CurrentDomain
 								.GetAssemblies()
 								.SelectMany(asm => asm.GetLoadableTypes())
@@ -316,9 +312,6 @@ namespace Telerik.JustMock.Core
 			if (type == null)
 				throw new ArgumentException(String.Format("Type '{0}' not found", fullName), "fullName");
 			return type;
-#else
-			return Type.GetType(fullName, throwOnError: false);
-#endif
 		}
 
 		public static IEnumerable<Type> GetLoadableTypes(this Assembly assembly)
@@ -489,10 +482,6 @@ namespace Telerik.JustMock.Core
 			var assemblyName = new AssemblyName(name);
 			if (keyPair != null)
 				assemblyName.KeyPair = new StrongNameKeyPair(keyPair);
-#elif SILVERLIGHT
-			var assemblyName = keyPair == null || !ProfilerInterceptor.IsProfilerAttached
-				? new AssemblyName(name)
-				: (AssemblyName) ProfilerInterceptor.CreateStrongNameAssemblyNameImpl(name, keyPair);
 #else
 			var assemblyName = new AssemblyName(name);
 #endif
@@ -636,11 +625,7 @@ namespace Telerik.JustMock.Core
 
 		public static bool IsExtern(this MethodBase method)
 		{
-#if !PORTABLE
 			return (method.GetMethodImplementationFlags() & MethodImplAttributes.InternalCall) == MethodImplAttributes.InternalCall;
-#else
-			return false;
-#endif
 		}
 
 		public static string Join(this string separator, IEnumerable<object> objects)

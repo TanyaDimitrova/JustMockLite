@@ -128,10 +128,6 @@ namespace Telerik.JustMock.Core
 			var returnType = invokeMethod.ReturnType;
 			var parameterTypes = invokeMethod.GetParameters().Select(p => p.ParameterType).ToArray();
 
-#if SILVERLIGHT
-			var method = CreateDynamicMethodWithVisibilityChecks(returnType, parameterTypes, ilGen);
-			return Delegate.CreateDelegate(delegateType, method);
-#else
 			// If you try to call the DynamicMethod constructor specifying a ByRef type
 			// as the return value it throws NotSupportedException with the following message:
 			// "The return Type contains some invalid type(i.e. null, ByRef)". In order to make
@@ -151,7 +147,6 @@ namespace Telerik.JustMock.Core
 
 			ilGen(method.GetILGenerator());
 			return method.CreateDelegate(delegateType);
-#endif
 		}
 
 		private static ModuleBuilder moduleBuilder;

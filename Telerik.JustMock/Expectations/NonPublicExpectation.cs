@@ -478,11 +478,9 @@ namespace Telerik.JustMock.Expectations
 			);
 		}
 
-#if !PORTABLE
 		public INonPublicRefReturnExpectation RefReturn
 		{
 			get { return ProfilerInterceptor.GuardInternal(() => new NonPublicRefReturnExpectation()); }
 		}
-#endif
 	}
 }

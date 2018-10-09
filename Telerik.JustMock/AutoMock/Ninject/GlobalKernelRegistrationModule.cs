@@ -19,7 +19,7 @@
 // </copyright>
 //-------------------------------------------------------------------------------
 
-#if !SILVERLIGHT && !NETCF
+#if!NETCF
 namespace Telerik.JustMock.AutoMock.Ninject
 {
     using Telerik.JustMock.AutoMock.Ninject.Modules;

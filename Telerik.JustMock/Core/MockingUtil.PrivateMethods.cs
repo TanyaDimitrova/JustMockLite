@@ -266,7 +266,6 @@ namespace Telerik.JustMock.Core
 
 		public static MethodInfo GetLocalFunction(Type type, MethodInfo method, string localMemberName)
 		{
-#if !PORTABLE
 			if (type.IsProxy())
 			{
 				type = type.BaseType;
@@ -294,9 +293,6 @@ namespace Telerik.JustMock.Core
 			}
 
 			return localMethod;
-#else
-			return null;
-#endif
 		}
 
 		public static MethodInfo GetMethodWithLocalFunction(object target, string methodName)
@@ -319,7 +315,6 @@ namespace Telerik.JustMock.Core
 
 		public static MethodInfo GetMethodWithLocalFunction(Type type, string methodName, Type[] methodParamTypes)
 		{
-#if !PORTABLE
 			if (type.IsProxy())
 			{
 				type = type.BaseType;
@@ -331,9 +326,6 @@ namespace Telerik.JustMock.Core
 				throw new MissingMemberException(MockingUtil.BuildMissingMethodMessage(type, null, methodName));
 			}
 			return method;
-#else
-			return null;
-#endif
 		}
 
 		public static string BuildMissingLocalFunctionMessage(Type type, MethodInfo method, string localFunctionName)

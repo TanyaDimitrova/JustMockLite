@@ -46,9 +46,6 @@ using AssertionException = Xunit.Sdk.XunitException;
 #else
 using AssertionException = Xunit.Sdk.AssertException;
 #endif
-#elif VSTEST_PORTABLE
-using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
-using AssertionException = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.AssertFailedException;
 #else
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using AssertionException = Microsoft.VisualStudio.TestTools.UnitTesting.AssertFailedException;
@@ -1123,19 +1120,16 @@ namespace Telerik.JustMock.Tests
     }
 
 #if !XUNIT
-#if !PORTABLE
 #if !NUNIT
 	[TestClass]
 	public class DebugViewTests
 	{
-#if !SILVERLIGHT
 		private static string resultsDirectory;
-#endif
 
 		[AssemblyInitialize]
 		public static void AssemblyInit(TestContext testContext)
 		{
-#if (!SILVERLIGHT && !NETCOREAPP2_0)
+#if (!NETCOREAPP2_0)
 			resultsDirectory = testContext.TestRunResultsDirectory;
 #endif
 			DebugView.IsTraceEnabled = true;
@@ -1147,13 +1141,11 @@ namespace Telerik.JustMock.Tests
 			var trace = DebugView.FullTrace;
 			DebugView.IsTraceEnabled = false;
 
-#if !SILVERLIGHT
 			if (!String.IsNullOrEmpty(resultsDirectory))
 			{
 				Directory.CreateDirectory(resultsDirectory);
 				File.WriteAllText(Path.Combine(resultsDirectory, "VSTest.FullTrace.log"), trace);
 			}
-#endif
 		}
 	}
 #else
@@ -1185,7 +1177,6 @@ namespace Telerik.JustMock.Tests
 			File.WriteAllText(Path.Combine(TestContext.CurrentContext.WorkDirectory, "NUnit.FullTrace.log"), trace);
 		}
 	}
-#endif
 #endif
 #endif
 }

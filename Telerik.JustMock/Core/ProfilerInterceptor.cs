@@ -354,11 +354,7 @@ namespace Telerik.JustMock.Core
 
 		private static int GetTypeId(Type type)
 		{
-#if SILVERLIGHT
-			return GetTypeIdImpl(type.Module.ToString(), type.MetadataToken);
-#else
 			return GetTypeIdImpl(type.Module.ModuleVersionId.ToString("B").ToUpperInvariant(), type.MetadataToken);
-#endif
 		}
 
 		[DebuggerHidden]

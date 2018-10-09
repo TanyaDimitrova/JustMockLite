@@ -13,7 +13,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-#if SILVERLIGHT || NETCF
+#if NETCF
 namespace System.Threading
 {
     using System.Diagnostics;
