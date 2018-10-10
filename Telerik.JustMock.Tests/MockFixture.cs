@@ -2173,7 +2173,7 @@ namespace Telerik.JustMock.Tests
 			bool IsAllowed(ShortFlags flags);
 		}
 
-#if !DOTNET35 && !WINDOWS_PHONE
+#if !DOTNET35
 		[TestMethod, TestCategory("Lite"), TestCategory("DotNetCore"), TestCategory("Regression")]
 		public void ShouldInterceptDynamicProxyMethodsFromMultipleThreads()
 		{

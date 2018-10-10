@@ -38,8 +38,6 @@ namespace Telerik.JustMock.AutoMock.Ninject.Planning.Targets
             get { return Site.ParameterType; }
         }
 
-// Windows Phone doesn't support default values and returns null instead of DBNull.
-#if !WINDOWS_PHONE
         /// <summary>
         /// Gets a value indicating whether the target has a default value.
         /// </summary>
@@ -56,7 +54,6 @@ namespace Telerik.JustMock.AutoMock.Ninject.Planning.Targets
         {
             get { return HasDefaultValue ? defaultValue.Value : base.DefaultValue; }
         }
-#endif
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ParameterTarget"/> class.

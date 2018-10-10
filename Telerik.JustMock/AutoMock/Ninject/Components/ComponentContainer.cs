@@ -144,15 +144,8 @@ namespace Telerik.JustMock.AutoMock.Ninject.Components
                 Type gtd = component.GetGenericTypeDefinition();
                 Type argument = component.GetGenericArguments()[0];
 
-#if WINDOWS_PHONE
-                Type discreteGenericType =
-                    typeof (IEnumerable<>).MakeGenericType(argument);
-                if (gtd.IsInterface && discreteGenericType.IsAssignableFrom(component))
-                    return GetAll(argument).CastSlow(argument);
-#else
                 if (gtd.IsInterface && typeof (IEnumerable<>).IsAssignableFrom(gtd))
                     return GetAll(argument).CastSlow(argument);
-#endif
             }
             Type implementation = _mappings[component].FirstOrDefault();
 
@@ -215,7 +208,7 @@ namespace Telerik.JustMock.AutoMock.Ninject.Components
             return constructor;
         }
 
-#if WINDOWS_PHONE || NETCF_35
+#if NETCF_35
         private class HashSet<T>
         {
             private IDictionary<T, object> data = new Dictionary<T,object>();
