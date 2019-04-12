@@ -247,6 +247,23 @@ namespace Telerik.JustMock.Core
             return null;
         }
 
+        internal bool IsTypeIdIntercepted(int typeId)
+        {
+            if (!ProfilerInterceptor.IsInterceptionEnabled)
+            {
+                return false;
+            }
+
+            var disabledTypesIds =  disabledTypes.Select(type => ProfilerInterceptor.GetTypeId(type)).ToList();
+            if (disabledTypesIds.Contains(typeId))
+            {
+                return false;
+            }
+
+            var arrangedTypeIds = arrangedTypes.Select(type => ProfilerInterceptor.GetTypeId(type)).ToList();
+            return arrangedTypeIds.Contains(typeId);
+        }
+
         private static bool AreTypesInRegistrySame(Type queryType, Type typeInRegistry)
         {
             if (queryType == typeInRegistry)
