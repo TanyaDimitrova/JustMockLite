@@ -33,6 +33,8 @@ namespace Telerik.JustMock.Core
 {
     internal static class ProfilerInterceptor
     {
+        private static bool isGuadsEnabled = false;
+
         private static bool DispatchInvocation(Invocation invocation)
         {
             DebugView.TraceEvent(IndentLevel.Dispatch, () => String.Format("Intercepted profiler call: {0}", invocation.InputToString()));
@@ -166,6 +168,24 @@ namespace Telerik.JustMock.Core
                 WrapCallToDelegate("GetTypeId", out GetTypeIdImpl);
 
                 bridge.GetMethod("Init").Invoke(null, null);
+
+                var processInvocationType = typeof(object).Assembly.GetType("Telerik.JustMock.ProcessInvocationDelegate");
+                Func<RuntimeTypeHandle, RuntimeMethodHandle, object[], bool> interceptCallAsAction = InterceptCall;
+                var interceptCallDelegate = Delegate.CreateDelegate(processInvocationType, interceptCallAsAction.Method);
+                bridge.GetField("ProcessInvocation").SetValue(null, interceptCallDelegate);
+
+                var processNewobjType = typeof(object).Assembly.GetType("Telerik.JustMock.ProcessNewobjDelegate");
+                Func<RuntimeTypeHandle, RuntimeMethodHandle, object[], object> interceptNewobjAsAction = InterceptNewobj;
+                var interceptNewobjDelegate = Delegate.CreateDelegate(processNewobjType, interceptNewobjAsAction.Method);
+                bridge.GetField("ProcessNewobj").SetValue(null, interceptNewobjDelegate);
+
+                var IsInterceptionEnabledType = typeof(object).Assembly.GetType("Telerik.JustMock.IsInterceptionEnabledDelegate");
+                Func<RuntimeTypeHandle, bool> isInterceptionEnabledCallAsAction = IsInterceptionEnabledForType;
+                var isInterceptionEnabledTypeDelegate = Delegate.CreateDelegate(IsInterceptionEnabledType, isInterceptionEnabledCallAsAction.Method);
+                bridge.GetField("IsInterceptionEnabled").SetValue(null, isInterceptionEnabledTypeDelegate);
+
+                var arrangedTypesField = bridge.GetField("ArrangedTypesArray");
+                arrangedTypesField.SetValue(null, arrangedTypesArray);
             }
         }
 
@@ -209,24 +229,6 @@ namespace Telerik.JustMock.Core
 
                     FinalizerThreadIdentifier.Identify();
 
-                    var processInvocationType = typeof(object).Assembly.GetType("Telerik.JustMock.ProcessInvocationDelegate");
-                    Func<RuntimeTypeHandle, RuntimeMethodHandle, object[], bool> interceptCallAsAction = InterceptCall;
-                    var interceptCallDelegate = Delegate.CreateDelegate(processInvocationType, interceptCallAsAction.Method);
-                    bridge.GetField("ProcessInvocation").SetValue(null, interceptCallDelegate);
-
-                    var processNewobjType = typeof(object).Assembly.GetType("Telerik.JustMock.ProcessNewobjDelegate");
-                    Func<RuntimeTypeHandle, RuntimeMethodHandle, object[], object> interceptNewobjAsAction = InterceptNewobj;
-                    var interceptNewobjDelegate = Delegate.CreateDelegate(processNewobjType, interceptNewobjAsAction.Method);
-                    bridge.GetField("ProcessNewobj").SetValue(null, interceptNewobjDelegate);
-
-                    var IsInterceptionEnabledType = typeof(object).Assembly.GetType("Telerik.JustMock.IsInterceptionEnabledDelegate");
-                    Func<string, int, bool> isInterceptionEnabledCallAsAction = IsInterceptionEnabledForType;
-                    var isInterceptionEnabledTypeDelegate = Delegate.CreateDelegate(IsInterceptionEnabledType, isInterceptionEnabledCallAsAction.Method);
-                    bridge.GetField("IsInterceptionEnabled").SetValue(null, isInterceptionEnabledTypeDelegate);
-
-                    var arrangedTypesField = bridge.GetField("ArrangedTypesArray");
-                    arrangedTypesField.SetValue(null, arrangedTypesArray);
-
                     IsInterceptionSetup = true;
                 }
             }
@@ -252,34 +254,34 @@ namespace Telerik.JustMock.Core
         }
 
 #if DEBUG
-		private static readonly Dictionary<MocksRepository, HashSet<Type>> typesEnabledByRepo = new Dictionary<MocksRepository, HashSet<Type>>();
+        private static readonly Dictionary<MocksRepository, HashSet<Type>> typesEnabledByRepo = new Dictionary<MocksRepository, HashSet<Type>>();
 #endif
         public static void EnableInterception(Type type, bool enabled, MocksRepository behalf)
         {
             if (IsProfilerAttached)
             {
 #if DEBUG
-				lock (typesEnabledByRepo)
-				{
-					HashSet<Type> types;
-					if (!typesEnabledByRepo.TryGetValue(behalf, out types))
-					{
-						types = new HashSet<Type>();
-						typesEnabledByRepo.Add(behalf, types);
-					}
+                lock (typesEnabledByRepo)
+                {
+                    HashSet<Type> types;
+                    if (!typesEnabledByRepo.TryGetValue(behalf, out types))
+                    {
+                        types = new HashSet<Type>();
+                        typesEnabledByRepo.Add(behalf, types);
+                    }
 
-					if (types.Contains(type) == enabled)
-					{
-						throw new InvalidOperationException("Type interception enabled or disabled twice.");
-					}
+                    if (types.Contains(type) == enabled)
+                    {
+                        throw new InvalidOperationException("Type interception enabled or disabled twice.");
+                    }
 
-					if (enabled)
-						types.Add(type);
-					else types.Remove(type);
+                    if (enabled)
+                        types.Add(type);
+                    else types.Remove(type);
 
-					if (types.Count == 0)
-						typesEnabledByRepo.Remove(behalf);
-				}
+                    if (types.Count == 0)
+                        typesEnabledByRepo.Remove(behalf);
+                }
 #endif
 
                 bool enabledInAnyRepository;
@@ -320,17 +322,54 @@ namespace Telerik.JustMock.Core
             }
         }
 
-        public static bool IsInterceptionEnabledForType(string midv, int typeId)
+        private static bool IsInterceptionEnabledForType(RuntimeTypeHandle typeHandle)
         {
-            //int typeId = GetTypeIdImpl(midv, typeHandle.Value.ToInt32());
-            lock (arrangedTypesArray)
+            bool result = false;
+            try
             {
-                var arrayIndex = typeId >> 3;
-                var arrayMask = 1 << (typeId & ((1 << 3) - 1));
-                var result = (arrangedTypesArray[arrayIndex] & arrayMask) != 0;
+                isGuadsEnabled = false;
+                ProfilerInterceptor.ReentrancyCounter++;
+
+                if (isFinalizerThread)
+                {
+                    return false;
+                }
+
+                Type interceptedType = Type.GetTypeFromHandle(typeHandle);
+
+                var repo = MockingContext.ResolveRepository(UnresolvedContextBehavior.CreateNewContextual);
+                /*
+                 * TODO: Insert repository related check here
+                 * 
+                if (repo != null)
+                {
+                    result = repo.IsInterceptionEnabledForType();
+                }
+                else
+                */
+                {
+                    lock (arrangedTypesArray)
+                    {
+                        int typeId = GetTypeId(interceptedType);
+                        int arrayIndex = typeId >> 3;
+                        int arrayMask = 1 << (typeId & ((1 << 3) - 1));
+                        result = (arrangedTypesArray[arrayIndex] & arrayMask) != 0;
+                    }
+                }
 
                 return result;
             }
+            catch (Exception e)
+            {
+                result = false;
+            }
+            finally
+            {
+                isGuadsEnabled = true;
+                ProfilerInterceptor.ReentrancyCounter--;
+            }
+
+            return result;
         }
 
         public static void TypesCounter()
@@ -389,7 +428,7 @@ namespace Telerik.JustMock.Core
         private static int GetTypeId(Type type)
         {
 #if SILVERLIGHT
-			return GetTypeIdImpl(type.Module.ToString(), type.MetadataToken);
+            return GetTypeIdImpl(type.Module.ToString(), type.MetadataToken);
 #else
             return GetTypeIdImpl(type.Module.ModuleVersionId.ToString("B").ToUpperInvariant(), type.MetadataToken);
 #endif
@@ -410,6 +449,12 @@ namespace Telerik.JustMock.Core
         [DebuggerHidden]
         public static void GuardInternal(Action guardedAction)
         {
+            if (!isGuadsEnabled)
+            {
+                guardedAction();
+                return;
+            }
+
             try
             {
                 ReentrancyCounter++;
@@ -424,6 +469,11 @@ namespace Telerik.JustMock.Core
         [DebuggerHidden]
         public static T GuardInternal<T>(Func<T> guardedAction)
         {
+            if (!isGuadsEnabled)
+            {
+                return guardedAction();
+            }
+
             try
             {
                 ReentrancyCounter++;
@@ -438,6 +488,11 @@ namespace Telerik.JustMock.Core
         [DebuggerHidden]
         public static ref T GuardInternal<T>(RefReturn<T> @delegate, object target, object[] args)
         {
+            if (!isGuadsEnabled)
+            {
+                return ref @delegate(target, args);
+            }
+
             try
             {
                 ReentrancyCounter++;
@@ -452,6 +507,12 @@ namespace Telerik.JustMock.Core
         [DebuggerHidden]
         public static void GuardExternal(Action guardedAction)
         {
+            if (!isGuadsEnabled)
+            {
+                guardedAction();
+                return;
+            }
+
             var oldCounter = ProfilerInterceptor.ReentrancyCounter;
             try
             {
@@ -467,6 +528,11 @@ namespace Telerik.JustMock.Core
         [DebuggerHidden]
         public static T GuardExternal<T>(Func<T> guardedAction)
         {
+            if (!isGuadsEnabled)
+            {
+                return guardedAction();
+            }
+
             var oldCounter = ProfilerInterceptor.ReentrancyCounter;
             try
             {
@@ -484,6 +550,11 @@ namespace Telerik.JustMock.Core
         [DebuggerHidden]
         public static ref T GuardExternal<T>(RefReturn<T> @delegate, object target, object[] args)
         {
+            if (!isGuadsEnabled)
+            {
+                return ref @delegate(target, args);
+            }
+
             var oldCounter = ProfilerInterceptor.ReentrancyCounter;
             try
             {
