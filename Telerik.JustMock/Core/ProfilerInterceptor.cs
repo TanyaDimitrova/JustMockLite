@@ -151,16 +151,12 @@ namespace Telerik.JustMock.Core
                     return false;
                 }
 
-                var repo = MockingContext.ResolveRepository(UnresolvedContextBehavior.CreateNewContextual);
-                if (repo != null)
+                lock (enabledInterceptions)
                 {
-                    result = repo.IsTypeIdIntercepted(typeId);
-                }
-                else
-                {
-                    lock (arrangedTypesArray)
+                    HashSet<MocksRepository> repositories;
+                    if (enabledInterceptions.TryGetValue(typeId, out repositories))
                     {
-                        result = IsTypeIdIntercepted(typeId);
+                        result = repositories.Count > 0;
                     }
                 }
 
@@ -181,7 +177,7 @@ namespace Telerik.JustMock.Core
         static ProfilerInterceptor()
         {
 #if !LITE_EDITION
-            var mscorlib = typeof(object).Assembly;
+        var mscorlib = typeof(object).Assembly;
             bridge = mscorlib.GetType("Telerik.JustMock.Profiler");
 #endif
             if (bridge == null)
@@ -311,71 +307,29 @@ namespace Telerik.JustMock.Core
                 }
 #endif
 
-                bool enabledInAnyRepository;
-
-                DebugView.TraceEvent(IndentLevel.Configuration, () => String.Format("Interception of type {0} is now {1}", type, enabled ? "on" : "off"));
-
+                int typeId = GetTypeId(type);
                 lock (enabledInterceptions)
                 {
-                    bool hasKey = enabledInterceptions.ContainsKey(type);
-                    if (!hasKey)
+                    HashSet<MocksRepository> repositories;
+                    if (!enabledInterceptions.TryGetValue(typeId, out repositories))
                     {
-                        enabledInterceptions.Add(type, enabled ? 1 : 0);
-                        //enabledInterceptions.Add(type, enabled ? 2 : 0); // hack to reproduce the problem.
-                        enabledInAnyRepository = enabled;
+                        repositories = new HashSet<MocksRepository>();
+                    }
+                    if (enabled)
+                    {
+                        repositories.Add(behalf);
                     }
                     else
                     {
-                        int count = enabledInterceptions[type];
-                        if (!enabled && count > 0)
-                            count--;
-                        else if (enabled)
-                            count++;
-                        enabledInAnyRepository = count > 0;
-                        enabledInterceptions[type] = count;
+                        repositories.Remove(behalf);
                     }
-                }
+                    enabledInterceptions[typeId] = repositories;
 
-                int typeId = GetTypeId(type);
-                int arrayIndex = typeId >> 3;
-                int arrayMask = 1 << (typeId & ((1 << 3) - 1));
-                lock (arrangedTypesArray)
-                {
-                    if (enabledInAnyRepository)
-                        arrangedTypesArray[arrayIndex] = (byte)(arrangedTypesArray[arrayIndex] | arrayMask);
-                    else
-                        arrangedTypesArray[arrayIndex] = (byte)(arrangedTypesArray[arrayIndex] & ~arrayMask);
+                    DebugView.TraceEvent(IndentLevel.Configuration,
+                        () => String.Format("Interception of type {0} is now {1}", type, repositories.Count > 0 ? "on" : "off"));
+
                 }
             }
-        }
-
-        public static void TypesCounter()
-        {
-            int registeredTypesCount = 0;
-            lock (arrangedTypesArray)
-            {
-                registeredTypesCount = arrangedTypesArray.Where(b => b != 0).Count();
-            }
-        }
-
-        public static bool IsTypeIntercepted(Type type)
-        {
-            if (type == null)
-            {
-                return false;
-            }
-
-            var typeId = GetTypeId(type);
-            var arrayIndex = typeId >> 3;
-            var arrayMask = 1 << (typeId & ((1 << 3) - 1));
-            return IsTypeIdIntercepted(GetTypeId(type));
-        }
-
-        private static bool IsTypeIdIntercepted(int typeId)
-        {
-            var arrayIndex = typeId >> 3;
-            var arrayMask = 1 << (typeId & ((1 << 3) - 1));
-            return (arrangedTypesArray[arrayIndex] & arrayMask) != 0;
         }
 
         internal static void RegisterGlobalInterceptor(MethodBase method, MocksRepository repo)
@@ -680,8 +634,9 @@ namespace Telerik.JustMock.Core
 
         private static readonly Type bridge;
         private static readonly Func<string/*module mvid or name (SL)*/, int /*typedef token*/, int /*id*/> GetTypeIdImpl;
-        private static readonly Dictionary<Type, int> enabledInterceptions = new Dictionary<Type, int>();
-        private static readonly byte[] arrangedTypesArray = new byte[100000];
+
+        private static Dictionary<int/*typeId*/, HashSet<MocksRepository>> enabledInterceptions = new Dictionary<int, HashSet<MocksRepository>>();
+
         private static readonly object mutex = new object();
         private static readonly Func<int> getReentrancyCounter;
         private static readonly Action<int> setReentrancyCounter;
