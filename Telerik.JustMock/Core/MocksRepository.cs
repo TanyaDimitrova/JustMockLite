@@ -430,7 +430,11 @@ namespace Telerik.JustMock.Core
 #if !PORTABLE
                 if(returnType.BaseType != null && returnType.BaseType == typeof(Task))
                 {
+#if FEATURE_LEGACY_REFLECTION_API
+                    Type taskGenericArgument = returnType.GetGenericArguments().FirstOrDefault();
+#else
                     Type taskGenericArgument = returnType.GenericTypeArguments.FirstOrDefault();
+#endif
                     object taskArgumentDefaultValue = taskGenericArgument.GetDefaultValue();
 
                     // create a task with default value to return, by using the casting help method in MockingUtil
@@ -441,7 +445,7 @@ namespace Telerik.JustMock.Core
                 }
                 else
 #endif
-                {
+                    {
                     defaultValue = returnType.GetDefaultValue();
                 }
 

@@ -943,9 +943,15 @@ namespace Telerik.JustMock.Core
         public static Task<T> TaskFromObject<T>(object o)
         {
             T value = (T)o;
+#if FEATURE_LEGACY_REFLECTION_API
+            Task<T> task = new Task<T>(() => value);
 
-            return Task.Run(() => value);
+            return task;
+#else
+            Task<T> a = Task.Run(() => value);
+            return a;
+#endif
         }
 #endif
-    }
+     }
 }
