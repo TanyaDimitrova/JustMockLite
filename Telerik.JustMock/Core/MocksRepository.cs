@@ -33,6 +33,8 @@ using Telerik.JustMock.Diagnostics;
 using Telerik.JustMock.Expectations;
 #if !PORTABLE
 using Telerik.JustMock.Core.Castle.DynamicProxy.Generators;
+using Telerik.JustMock.DebugWindow.Service.Client;
+using Telerik.JustMock.DebugWindow.Service.Model;
 #endif
 
 #if NETCORE
@@ -447,6 +449,24 @@ namespace Telerik.JustMock.Core
 
                 invocation.ReturnValue = defaultValue;
             }
+
+            if (DebugView.IsRemoteTraceEnabled)
+            {
+                using (var publisher = new MockRepositoryPublishingServiceClient("net.tcp://localhost:10003/MockRepositoryPublishingService"))
+                {
+                    publisher.MockInvoked(
+                        new DebugWindow.Service.Model.Mock()
+                        {
+                            MethodInfo = new MethodMockInfo(invocation.Method)
+                        },
+                        new DebugWindow.Service.Model.Invocation()
+                        {
+                            InstanceTypeName = invocation.Instance != null ? MockingUtil.GetUnproxiedType(invocation.Instance).FullName : invocation.Method.DeclaringType.FullName,
+                            ArgumentTypeNames = invocation.Args.Select(arg => arg.GetType().FullName).ToArray(),
+                            ReturnValueTypeName = invocation.Method.GetReturnType().FullName
+                        });
+                }
+            }
         }
 
         internal T GetValue<T>(object owner, object key, T dflt)
@@ -717,6 +737,14 @@ namespace Telerik.JustMock.Core
                 ActivatorCreateInstanceTBehavior.Attach(result, createInstanceMethodMock);
             }
 #endif
+
+            if (DebugView.IsRemoteTraceEnabled)
+            {
+                using (var publisher = new MockRepositoryPublishingServiceClient("net.tcp://localhost:10003/MockRepositoryPublishingService"))
+                {
+                    publisher.MockCreated(new DebugWindow.Service.Model.Mock() { MethodInfo = new MethodMockInfo(result.CallPattern.Method) });
+                }
+            }
 
             return result;
         }
