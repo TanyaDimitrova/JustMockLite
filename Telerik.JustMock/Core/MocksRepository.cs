@@ -461,7 +461,13 @@ namespace Telerik.JustMock.Core
                         },
                         new DebugWindow.Service.Model.Invocation()
                         {
-                            InstanceTypeName = invocation.Instance != null ? MockingUtil.GetUnproxiedType(invocation.Instance).FullName : invocation.Method.DeclaringType.FullName,
+                            InstanceTypeBlob =
+                                ObjectBlob.FromObject(
+                                    invocation.Instance != null
+                                        ?
+                                            MockingUtil.GetUnproxiedType(invocation.Instance)
+                                            :
+                                            invocation.Method.DeclaringType),
                             ArgumentTypeNames = invocation.Args.Select(arg => arg.GetType().FullName).ToArray(),
                             ReturnValueTypeName = invocation.Method.GetReturnType().FullName
                         });
