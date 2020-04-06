@@ -461,15 +461,14 @@ namespace Telerik.JustMock.Core
                         },
                         new DebugWindow.Service.Model.Invocation()
                         {
-                            InstanceTypeBlob =
-                                ObjectBlob.FromObject(
-                                    invocation.Instance != null
-                                        ?
-                                            MockingUtil.GetUnproxiedType(invocation.Instance)
-                                            :
-                                            invocation.Method.DeclaringType),
-                            ArgumentTypeNames = invocation.Args.Select(arg => arg.GetType().FullName).ToArray(),
-                            ReturnValueTypeName = invocation.Method.GetReturnType().FullName
+                            Instance = 
+                                invocation.Instance != null
+                                    ?
+                                        new ObjectValue(invocation.Instance.GetType(), invocation.Instance)
+                                        :
+                                        new ObjectValue(invocation.Method.DeclaringType.GetType(), invocation.Method.DeclaringType),
+                            Arguments = invocation.Args.Select(arg => new ObjectValue(arg.GetType(), arg)).ToArray(),
+                            ReturnValue = new ObjectValue(invocation.Method.GetReturnType(), invocation.ReturnValue)
                         });
                 }
             }
