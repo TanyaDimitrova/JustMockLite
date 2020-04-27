@@ -1,4 +1,4 @@
-/*
+﻿/*
  JustMock Lite
  Copyright © 2020 Progress Software Corporation
 
@@ -16,24 +16,13 @@
 */
 
 using System;
-using System.Reflection;
-using Telerik.JustMock.AutoMock.Ninject.Modules;
-using Telerik.JustMock.Core;
 
 #if !PORTABLE
 namespace Telerik.JustMock.Plugins
 {
-    internal interface IDebugWindowPlugin : INinjectModule, IDisposable
+    public abstract class RecoveryResultEventArgs<T> : EventArgs
     {
-        void TraceMessage(string message);
-
-        void MockCreated(MockInfo mock);
-        void MockInvoked(MockInfo mock, InvocationInfo invocation);
-        void RepositoryCreated();
-        void RepositoryRetired();
-
-        event EventHandler<TraceRecoveryEventArgs> TraceRecoveryEvent;
-        event EventHandler<RepositoryRecoveredEventArgs> RepositoryRecoveredEvent;
+        public T Result { get; set; }
     }
 }
 #endif

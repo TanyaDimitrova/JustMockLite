@@ -26,6 +26,7 @@ using Telerik.JustMock.Diagnostics;
 #if !PORTABLE
 using Telerik.JustMock.Helpers;
 using Telerik.JustMock.Plugins;
+using Telerik.JustMock.AutoMock.Ninject.Parameters;
 #endif
 
 namespace Telerik.JustMock.Core.Context
@@ -154,6 +155,8 @@ namespace Telerik.JustMock.Core.Context
 		{
 #if !PORTABLE
 			MockingContext.Plugins = new PluginsRegistry();
+			AppDomain.CurrentDomain.DomainUnload += CurrentDomain_DomainUnload;
+
 			try
 			{
 				var clrVersion = Environment.Version;
@@ -166,13 +169,13 @@ namespace Telerik.JustMock.Core.Context
 							"Telerik.JustMock.DebugWindow.Plugin.dll");
 					if (File.Exists(debugWindowAssemblyPath))
 					{
-						MockingContext.Plugins.Register<IDebugWindowPlugin>(debugWindowAssemblyPath);
+						MockingContext.Plugins.Register<IDebugWindowPlugin>(debugWindowAssemblyPath, new ConstructorArgument("subscribe", true));
 					}
 				}
 			}
 			catch (Exception e)
 			{
-				DebugView.DebugTrace("Exception thrown during plugin registration: " + e);
+				Debug.Print("Exception thrown during plugin registration: " + e);
 			}
 #endif
 
@@ -214,6 +217,13 @@ namespace Telerik.JustMock.Core.Context
 			if (failThrower == null)
 				failThrower = LocalMockingContextResolver.GetFailMethod();
 		}
+
+#if !PORTABLE
+		private static void CurrentDomain_DomainUnload(object sender, EventArgs e)
+		{
+			MockingContext.Plugins.Dispose();
+		}
+#endif
 
 		private static void Fail(string msg)
 		{
