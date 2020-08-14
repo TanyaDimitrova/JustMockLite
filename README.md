@@ -1,3 +1,27 @@
+This month, take advantage of our **30% discount on Telerik JustMock**—the fastest, most flexible and complete mocking solution for crafting unit tests. 
+If you want to:
+*	Remove the Hassle of Writing Unit Tests 
+*	Utilize Arrange, Act, Assert (AAA) Pattern 
+*	Mock Types and Members With Any Access Modifiers 
+*	Fully Profiled Automocking 
+*	Build System Integration 
+*	Integrate with Visual Studio and Other Tools
+We have got you covered! 
+
+### With **Telerik JustMock you could save up to 50% in development time**. The product can be integrated seamlessly into your organization and doesn’t disrupt your existing business processes. 
+[ Get Telerik JustMock at a 30% discount  ➤](https://store.progress.com/configure-purchase?utm_medium=external-website&utm_source=github&skuId=6443&coupon=prom-bhuasa&utm_campaign=devcraft-promo-aug2020-kui-mals&elqTrackId=88d9d9ae237948c5baa01fb48bee2c06&elq=55a98f35fdfa42d5ab65f5c85ce41772&elqaid=21974&elqat=1&elqCampaignId=)
+
+### Are you building for **ASP.NET Web Forms/MVC/Core or WPF/Winforms or need a sturdy reporting solution?*** Get JustMock as part of our complete developer tools collection with priority support. 
+[ Get DevCraft at a 30% discount  ➤](https://store.progress.com/configure-purchase?utm_medium=external-website&utm_source=github&skuId=6127&coupon=prom-bhuasa&utm_campaign=devcraft-promo-aug2020-kui-mals&elqTrackId=88d9d9ae237948c5baa01fb48bee2c06&elq=55a98f35fdfa42d5ab65f5c85ce41772&elqaid=21974&elqat=1&elqCampaignId=)
+
+To receive your discount, simply apply this promo code at checkout:
+**PROM-BHUASA**
+
+Happy coding, 
+
+The Telerik Team at Progress 
+
+
 JustMock Lite
 ===
 
