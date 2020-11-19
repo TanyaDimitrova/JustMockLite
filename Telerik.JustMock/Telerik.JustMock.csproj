@@ -56,9 +56,6 @@
   <PropertyGroup Condition="$(NetCoreSupportedVersions.Contains('$(TargetFramework)'))">
     <DefineConstants>$(DefineConstants);NETCORE</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net5.0'">
-    <DefineConstants>$(DefineConstants);NET5</DefineConstants>
-  </PropertyGroup>
   <PropertyGroup>
     <SccProjectName />
     <SccLocalPath />
